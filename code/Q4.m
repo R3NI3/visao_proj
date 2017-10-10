@@ -6,6 +6,7 @@ end
 
 function method3(img)
 	[h,s,v] = rgb2hsv(img);
+	tmp_img = img;
 
 	[row,col] = find(s < 0.2);
 
@@ -21,14 +22,13 @@ function method3(img)
 	end
 
 	hsv_img = cat(3, h,s,v);
-	imshow([h,s,v]);
+	imshow(hsv2rgb(hsv_img));
 	n_img = hsv2rgb(hsv_img);
 	bw_img = im2bw(n_img);
 
 	SE = strel('square',3);
 	bw_img = imerode(bw_img,SE);
 	bw_img = imdilate(bw_img,SE);
-
 	figure;
 	imshow(bw_img);
 
@@ -38,13 +38,13 @@ function method3(img)
 	[H,theta,rho] = hough(img);
 	peaks  = houghpeaks(H,50);
 	lines = houghlines(img,theta,rho,peaks);
-	imshow(img)
+	imshow(tmp_img);
 	hold on
 	for k = 1:numel(lines)
 		x1 = lines(k).point1(1);
 		y1 = lines(k).point1(2);
 		x2 = lines(k).point2(1);
 		y2 = lines(k).point2(2);
-		plot([x1 x2],[y1 y2],'Color','g','LineWidth', 1)
+		plot([x1 x2],[y1 y2],'Color','r','LineWidth', 1)
 	end
 end
