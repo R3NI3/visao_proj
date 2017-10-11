@@ -45,6 +45,6 @@ function method3(img)
 		y1 = lines(k).point1(2);
 		x2 = lines(k).point2(1);
 		y2 = lines(k).point2(2);
-		plot([x1 x2],[y1 y2],'Color','r','LineWidth', 1)
+		plot([x1 x2],[y1 y2],'Color','g','LineWidth', 1)
 	end
 end

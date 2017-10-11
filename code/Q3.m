@@ -45,10 +45,10 @@ function [img] = method(img)
 
 	imshow(g_img);
 	figure
-	R = img(:,:,1); % REd
-	G = img(:,:,2); % Green
-	B = img(:,:,3); % Blue
-	new_img = cat(3,uint8(g_img).*R, uint8(g_img).*G, uint8(g_img).*B);
+	%R = img(:,:,1); % REd
+	%G = img(:,:,2); % Green
+	%B = img(:,:,3); % Blue
+	new_img = edge(g_img,'Sobel');%cat(3,uint8(g_img).*R, uint8(g_img).*G, uint8(g_img).*B);
 	imshow(new_img);
 
 end
