@@ -60,7 +60,8 @@ if has_cuda:
     model.cuda()
 
 def calculate_l21_norm(X):
-    return (np.sqrt(np.multiply(X, X).sum(1))).sum()
+    norm1 = X * X
+    return (np.sqrt(norm1.sum(1))).sum()
 
 def loss_function(recon_x, x, target):
     x = x.view(-1, 784)

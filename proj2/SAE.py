@@ -11,7 +11,10 @@ batch_size = 64
 log_interval = 20
 epochs = 100
 path_resume = './save_model/trained.pth.tar'
-training = False
+training = True
+directory = os.path.dirname(path_resume)
+if not os.path.exists(directory):
+    os.makedirs(directory)
 
 has_cuda = torch.cuda.is_available()
 
