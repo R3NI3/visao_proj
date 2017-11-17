@@ -13,7 +13,7 @@ has_cuda = torch.cuda.is_available()
 batch_size = 64
 test_batch_size = 10000
 log_interval = 100
-epochs = 10
+epochs = 5
 path_resume = './save_model/trained_fc2.pth.tar'
 path_resume_gsae = './save_model/trained_gsae.pth.tar'
 directory = os.path.dirname(path_resume)
@@ -52,6 +52,7 @@ gsae_model.load_state_dict(checkpoint['state_dict'])
 gsae_model.eval()
 if has_cuda:
     model.cuda()
+    gsae_model.cuda()
 
 criterion = F.cross_entropy
 optimizer = optim.Adam(model.parameters(), lr=1e-3, weight_decay=1e-5)
