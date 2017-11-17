@@ -1,6 +1,6 @@
 import torch
 import torch.utils.data
-from SAE import SAE
+from GSAE import GSAE
 from fc import fc_model
 from torch import nn, optim
 from torch.autograd import Variable, Function
@@ -11,9 +11,9 @@ import os
 
 has_cuda = torch.cuda.is_available()
 
-path_resume_sae = './save_model/trained.pth.tar'
-path_resume_fc = './save_model/trained_fc.pth.tar'
-path_resume = './save_model/trained_model.pth.tar'
+path_resume_gsae = './save_model/trained_gsae.pth.tar'
+path_resume_fc = './save_model/trained_fc2.pth.tar'
+path_resume = './save_model/trained_model_gsae.pth.tar'
 directory = os.path.dirname(path_resume)
 if not os.path.exists(directory):
     os.makedirs(directory)
@@ -34,20 +34,20 @@ test_loader = torch.utils.data.DataLoader(
     batch_size=test_batch_size, shuffle=True, **kwargs)
 
 class final_model(nn.Module):
-    def __init__(self, feature_sz, hidden_sz, output_sz, l1weight):
+    def __init__(self, feature_sz, hidden_sz, output_sz):
         super(final_model, self).__init__()
-        self.my_sae = SAE(feature_sz, hidden_sz, l1weight)
+        self.my_gsae = GSAE(feature_sz, hidden_sz)
         self.my_fc = fc_model(hidden_sz, output_sz)
 
-    def load_base_models(self, path_resume_sae, path_resume_fc):
-        if os.path.isfile(path_resume_sae):
-            print("=> loading checkpoint '{}'".format(path_resume_sae))
-            checkpoint = torch.load(path_resume_sae)
-            self.my_sae.load_state_dict(checkpoint['state_dict'])
+    def load_base_models(self, path_resume_gsae, path_resume_fc):
+        if os.path.isfile(path_resume_gsae):
+            print("=> loading checkpoint '{}'".format(path_resume_gsae))
+            checkpoint = torch.load(path_resume_gsae)
+            self.my_gsae.load_state_dict(checkpoint['state_dict'])
             print("=> loaded checkpoint '{}' (epoch {})"
-                  .format(path_resume_sae, checkpoint['epoch']))
+                  .format(path_resume_gsae, checkpoint['epoch']))
         else:
-            print("=> no checkpoint found at '{}'".format(path_resume_sae))
+            print("=> no checkpoint found at '{}'".format(path_resume_gsae))
 
         if os.path.isfile(path_resume_fc):
             print("=> loading checkpoint '{}'".format(path_resume_fc))
@@ -59,11 +59,11 @@ class final_model(nn.Module):
             print("=> no checkpoint found at '{}'".format(path_resume_fc))
 
     def forward(self, data):
-        x = self.my_sae.encode(data)
+        x = self.my_gsae.encode(data)
         return self.my_fc(x)
 
-model = final_model(784, 500, 10, 0.01)
-model.load_base_models(path_resume_sae, path_resume_fc)
+model = final_model(784, 500, 10)
+model.load_base_models(path_resume_gsae, path_resume_fc)
 if has_cuda:
     model.cuda()
 

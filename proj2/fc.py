@@ -1,6 +1,6 @@
 import torch
 import torch.utils.data
-from SAE import SAE
+from GSAE import GSAE
 from torch import nn, optim
 from torch.autograd import Variable, Function
 from torch.nn import functional as F
@@ -14,8 +14,8 @@ batch_size = 64
 test_batch_size = 10000
 log_interval = 100
 epochs = 10
-path_resume = './save_model/trained_fc.pth.tar'
-path_resume_sae = './save_model/trained.pth.tar'
+path_resume = './save_model/trained_fc2.pth.tar'
+path_resume_gsae = './save_model/trained_gsae.pth.tar'
 directory = os.path.dirname(path_resume)
 if not os.path.exists(directory):
     os.makedirs(directory)
@@ -46,10 +46,10 @@ class fc_model(nn.Module):
         return self.softmax(self.layer2(x))
 
 model = fc_model(500, 10)
-checkpoint = torch.load(path_resume_sae)
-sae_model = SAE(784, 500, 0.01)
-sae_model.load_state_dict(checkpoint['state_dict'])
-sae_model.eval()
+checkpoint = torch.load(path_resume_gsae)
+gsae_model = GSAE(784, 500)
+gsae_model.load_state_dict(checkpoint['state_dict'])
+gsae_model.eval()
 if has_cuda:
     model.cuda()
 
@@ -68,7 +68,7 @@ def train(epoch):
 
         optimizer.zero_grad()
         data = data.view(-1,784)
-        y_pred = model(sae_model.encode(data).detach())
+        y_pred = model(gsae_model.encode(data).detach())
 
         loss = criterion(y_pred, target)
         loss.backward()
@@ -93,7 +93,7 @@ def test(epoch):
             target = target.cuda()
         data = Variable(data, volatile=True)
         target = Variable(target, volatile=True)
-        y_pred = model(sae_model.encode(data))
+        y_pred = model(gsae_model.encode(data))
         test_loss += criterion(y_pred, target).data[0]
         pred = y_pred.data.max(1)[1]
         d = pred.eq(target.data).cpu()

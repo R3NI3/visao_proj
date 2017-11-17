@@ -37,8 +37,9 @@ class GSAE(nn.Module):
         self.hidden_size = hidden_size
 
     def encode(self,input):
+        x = input.view(-1, self.feature_size)
         # encoder
-        x = self.lin_encoder(input)
+        x = self.lin_encoder(x)
         x = F.relu(x)
         return x
 
@@ -49,7 +50,6 @@ class GSAE(nn.Module):
         return x
 
     def forward(self, input):
-        x = input.view(-1, self.feature_size)
         x = self.encode(input)
         # sparsity penalty
         #x = L1Penalty.apply(x, self.l1weight)
